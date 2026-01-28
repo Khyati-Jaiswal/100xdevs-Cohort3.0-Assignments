@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>The Pokemon</title>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: Georgia, 'Times New Roman', Times, serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+                min-height: 100vh;
+            }
+            .controls {
+                background: white;
+                max-width: 800px;
+                margin: 0 auto 40px;
+                padding: 30px;
+                border-radius: 25px;
+                text-align: center;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            }
+            .controls h1 {
+                font-size: 2.5rem;
+                margin-bottom: 25px;
+                color: #333;
+            }
+            .controls div {
+                display: flex;
+                gap: 15px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            input, select, button {
+                padding: 15px 20px;
+                border: 2px solid #e0e0e0;
+                border-radius: 15px;
+                font-size: 15px;
+                transition: all 0.3s ease;
+            }
+            input:focus, select:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+            button {
+                background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+                color: white;
+                border: none;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+            }
+            label {
+                padding: 15px 20px;
+                background: #f8f9fa;
+                border-radius: 15px;
+                font-weight: bold;
+                color: #555;
+                align-self: center;
+            }
+            #pokemonContainer {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .pokemon-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 25px;
+                margin-top: 20px;
+            }
+            .pokemon-card {
+                background: white;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                transition: all 0.3s ease;
+                position: relative;
+            }
+            .pokemon-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            }
+            .pokemon-image {
+                width: 100%;
+                height: 280px;
+                object-fit: cover;
+                background: #f0f0f0;
+            }
+            .pokemon-info {
+                padding: 25px;
+            }
+            .pokemon-name {
+                font-size: 28px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 8px;
+                text-transform: capitalize;
+            }
+            .pokemon-id {
+                color: #666;
+                font-size: 14px;
+                margin-bottom: 15px;
+                font-weight: 500;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="controls">
+            <h1>Generate Pokemon Cards</h1>
+            <div>
+                <input type="number" id="numCards" min="1" max="12" value="6" />
+                <label>Number of Cards</label>
+                <select id="pokemonType">
+                    <option value="">Any Pokemon (random)</option>
+                    <option value="fire">Fire</option>
+                    <option value="water">Water</option>
+                    <option value="grass">Grass</option>
+                    <option value="electric">Electric</option>
+                    <option value="psychic">Psychic</option>
+                </select>
+                <button onclick="generatePokemon()">Generate Pokemons</button>
+            </div>
+        </div>
+        <div id="pokemonContainer">
+            <p>No cards yet. Try generating some!</p>
+        </div>
+
+        <script>
+            async function generatePokemon() {
+                const numCards = document.getElementById("numCards").value;
+                const typeFilter = document.getElementById("pokemonType").value;
+
+                const container = document.getElementById("pokemonContainer");
+                container.innerHTML = `
+                <h2>You selected : </h2>
+                <p>Number : ${numCards} cards</p>
+                <p>Type : ${typeFilter || 'Any (Random)'}</p>
+                <p>Working on it . . .</p>
+                `;
+                try {
+                    let pokemonIDs = [];
+                    if(typeFilter) {
+                        const typeResponse = await fetch(`https://pokeapi.co/api/v2/type/${typeFilter}`);
+                        const typeData = await typeResponse.json();
+
+                        pokemonIDs = typeData.pokemon.map(p => {
+                            const url = p.pokemon.url;
+                            const id = url.match(/\/(\d+)\//)[1];
+                            return parseInt(id);
+                        });
+                    }
+                    else {
+                        pokemonIDs = [];
+                        for(let i=0;i<numCards;i++) {
+                            pokemonIDs.push(Math.floor(Math.random()*898) + 1);
+                        }
+                    }
+                    const pokemonPromises = pokemonIDs.slice(0,numCards).map(id => fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(res => res.json()));
+                    const pokemonData = await Promise.all(pokemonPromises);
+
+                    container.innerHTML = '<div class="pokemon-grid"></div>';
+                    const grid = container.querySelector('.pokemon-grid');
+                    pokemonData.forEach(pokemon => {
+                        const card = document.createElement('div');
+                        card.className = "pokemon-card";
+                        card.style.cssText = `
+                        border: 2px solid #333;
+                        padding: 15px;
+                        margin: 10px;
+                        border-radius: 10px;
+                        background: #f0f8ff;
+                        `;
+                        card.innerHTML = `
+                        <h3>${pokemon.name}</h3>
+                        <img src="${pokemon.sprites.front_default}" style="width: 150px; height: 150px;" alt="${pokemon.name}" />
+                        <p>ID : ${pokemon.id}</p>
+                        <p></p>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+                catch(error) {
+                    container.innerHTML = `
+                    <p style="color: red;">Error loading Pokemon!</p>
+                    `;
+                    console.error('Error:' ,error);
+                }
+            }
+        </script>
+    </body>
+</html>

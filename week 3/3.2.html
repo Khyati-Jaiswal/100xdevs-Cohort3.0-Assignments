@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Background Color Changer</title>
+
+        <style>
+            body {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .panel {
+                padding: 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                background: #f5f5f5;
+            }
+            .colors {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+            .color-btn {
+                width: 40px;
+                height: 40px;
+                border: none;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: transform 0.2s;
+            }
+            .add-color {
+                display: flex;
+                gap: 10px;
+            }
+            .add-color input {
+                flex: 1;
+                padding: 8px;
+            }
+            .add-btn {
+                padding: 8px 16px;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="panel">
+            <h2>Change Background Color</h2>
+            <div class="colors" id="colorPanel">
+                <button class="color-btn" data-color="red" style="background: red;"></button>
+                <button class="color-btn" data-color="green" style="background: green;"></button>
+                <button class="color-btn" data-color="blue" style="background: blue;"></button>
+                <button class="color-btn" data-color="yellow" style="background: yellow;"></button>
+                <button class="color-btn" data-color="purple" style="background: purple;"></button>
+                <button class="color-btn" data-color="orange" style="background: orange;"></button>
+            </div>
+            <div class="add-color">
+                <input type="text" id="customColor" placeholder="Enter a color" />
+                <button class="add-btn" id="addColorBtn">Add Color</button>
+            </div>
+        </div>
+
+        <script>
+            const colorPanel = document.getElementById('colorPanel');
+            const addColorBtn = document.getElementById('addColorBtn');
+            const customColorInput = document.getElementById('customColor');
+
+            colorPanel.addEventListener('click', (event) => {
+                const btn = event.target;
+                const color = btn.getAttribute('data-color');
+                if(!color) return;
+                document.body.style.backgroundColor = color;
+            });
+
+            addColorBtn.addEventListener('click', () => {
+                const color = customColorInput.value.trim();
+                if(color) {
+                    const newBtn = document.createElement('button');
+                    newBtn.className = 'color-btn';
+                    newBtn.setAttribute('data-color', color);
+                    newBtn.style.backgroundColor = color;
+                    colorPanel.appendChild(newBtn);
+                    customColorInput.value = '';
+                }
+            });
+
+
+            
+        </script>
+    </body>
+</html>

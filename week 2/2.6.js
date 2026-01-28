@@ -1,4 +1,4 @@
-class Calculator(){
+class Calculator{
     constructor(){
         this.result = 0;
     }
@@ -28,5 +28,13 @@ class Calculator(){
         const cleanedExpression = temp.replace(/\s+/g, '');
         const validExpression = /^[0-9+\-*/().]+$/.test(cleanedExpression);
         
+        if(!validExpression){
+            throw new Error("Invalid Expression");
+        }
+        try{
+            this.result = eval(cleanedExpression);
+        } catch(error){
+            throw new Error("Invalid Expression");
+        }
     }
 }
