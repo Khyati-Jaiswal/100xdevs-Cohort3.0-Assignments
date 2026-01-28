@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Form Builder with Preview</title>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+                background: blanchedalmond;
+                padding: 20px;
+                min-height: 100vh;
+            }
+            .app-container {
+                display: flex;
+                gap: 20px;
+                max-width: 1000px;
+                margin: 0 auto;
+                height: calc(100vh - 40px);
+            }
+            .builder-panel, .preview-panel {
+                background: white;
+                flex: 1;
+                padding: 20px;
+                border-radius: 15px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+            }
+            .builder-panel h2, .preview-panel h2 {
+                margin-bottom: 20px;
+                color: #333;
+                text-align: center;
+            }
+            .field-selector {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+            #fieldType {
+                flex: 1;
+                max-width: 200px;
+                cursor: pointer;
+            }
+            #fieldType:focus {
+                outline: none;
+                border-color: #ff7f50;
+                box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.2);
+                transform: scale(1.02);
+            }
+            select, button {
+                padding: 10px 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 10px;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            #addFieldBtn {
+                background: coral;
+                color: white;
+                border: none;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            button:hover {
+                background: #f0f0f0;
+                transform: translateY(-2px);
+            }
+            .form-preview {
+                border: 2px dashed #ccc;
+                padding: 20px;
+                min-height: 200px;
+                border-radius: 10px;
+                background: #fafafa;
+                overflow-y: auto;
+                transition: all 0.3s ease;
+            }
+            .form-preview p {
+                color: #999;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="app-container">
+            <div class="builder-panel">
+                <h2>Form Builder</h2>
+                <div class="field-selector">
+                    <select id="fieldType">
+                        <option value="text">Text Input</option>
+                        <option value="email">Email Input</option>
+                        <option value="radio">Radio Input</option>
+                        <option value="checkbox">Checkbox Input</option>
+                    </select>
+                    <button id="addFieldBtn">Add Field</button>
+                </div>
+            </div>
+            <div class="preview-panel">
+                <h2>Form Preview</h2>
+                <div id="formPreview" class="form-preview">
+                    <p>Preview area - fields will appear here</p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const fieldTypeSelect = document.getElementById('fieldType');
+            const addFieldBtn = document.getElementById('addFieldBtn');
+            const formPreview = document.getElementById('formPreview');
+
+            addFieldBtn.addEventListener('click', () => {
+                const fieldType = fieldTypeSelect.value;
+                let fieldElement;
+
+                switch (fieldType) {
+                    case 'text':
+                        fieldElement = document.createElement('input');
+                        fieldElement.type = 'text';
+                        fieldElement.placeholder = 'Text Input';
+                        break;
+                    case 'email':
+                        fieldElement = document.createElement('input');
+                        fieldElement.type = 'email';
+                        fieldElement.placeholder = 'Email Input';
+                        break;
+                    case 'radio':
+                        fieldElement = document.createElement('div');
+                        fieldElement.innerHTML = `
+                            <label>Radio Option</label>
+                                <input type="radio" name="radioGroup" /> 
+                                <input type="radio" name="radioGroup" />
+                                <input type="radio" name="radioGroup" />  
+                        `;
+                        break;
+                    case 'checkbox':
+                        fieldElement = document.createElement('div');
+                        fieldElement.innerHTML = `
+                            <label>Checkbox Option</label>
+                            <input type="checkbox" id="check1"/> 
+                            <label for="check1">Agree</label>
+                        `;
+                        break;
+                }
+                formPreview.appendChild(fieldElement);
+            });
+        </script>
+    </body>
+</html>
